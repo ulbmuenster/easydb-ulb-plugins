@@ -1,0 +1,12 @@
+plugin:
+  name: ulb
+  version: 1.0
+  server:
+    api-version:
+      require: 1
+
+custom_events:
+  - EASYDB_EXAMPLE_PLUGIN_EVENT
+
+python-2:
+  file: ulb.py
