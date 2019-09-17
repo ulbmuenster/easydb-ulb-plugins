@@ -41,8 +41,8 @@ def pre_update(easydb_context, easydb_info):
         result = requests.post(url=url, headers={
                                'Authorization': 'Bearer '+jsonwebtoken}, json={"institution": "ABC", "prefix": "cfg"})  # TODO configure prefix
         json_data = result.json()
-        if "id" in json_data:
-            inventarnummer = json_data["id"]
+        if "invnr" in json_data:
+            inventarnummer = json_data["invnr"]
         else:
             logger.debug(json.dumps(json_data))
     except requests.exceptions.ConnectionError:
