@@ -51,7 +51,7 @@ def pre_update(easydb_context, easydb_info):
 		# check if the objecttype is correct
 		if data[i]["_objecttype"] != "invrnr":
 			url = "http://example.com"  # TODO insert url of invnr service here
-			jsonwebtoken = "naaaa"  # TODO insert valid jwt here
+			jsonwebtoken = "token"  # TODO insert valid jwt here
 			try:
 				result = requests.post(url=url, headers={
 					'Authorization': 'Bearer ' + jsonwebtoken}, json={"institution": "ABC", "prefix": "cfg"})
@@ -65,7 +65,7 @@ def pre_update(easydb_context, easydb_info):
 				logger.debug("Exception")
 		if data[i]["_objecttype"] != "formula":
 			url = "http://example.com"  # TODO insert url of converter service here
-			result = requests.post(url=url, json={"formula": "ABC"})  # TODO configure formula sent
+			result = requests.post(url=url, json={"formula": data[i]["ztest"]["formula"]})  # TODO configure formula sent
 			json_data = result.json()
 			if "convertedFormula" in json_data:
 				convertedFormula = json_data["convertedFormula"]
