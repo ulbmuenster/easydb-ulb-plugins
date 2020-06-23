@@ -31,7 +31,6 @@ def easydb_server_start(easydb_context):
 
 # method for the 'db_pre_update' callback
 def pre_update(easydb_context, easydb_info):
-	inventarnummer = ''
 	convertedFormula = ''
 	# get a logger
 	logger = easydb_context.get_logger('ulb.pre_update')
@@ -49,38 +48,41 @@ def pre_update(easydb_context, easydb_info):
 			continue
 
 		# check if the objecttype is correct
-		if data[i]["_objecttype"] != "invrnr":
-			url = "http://example.com"  # TODO insert url of invnr service here
-			jsonwebtoken = "token"  # TODO insert valid jwt here
-			try:
-				result = requests.post(url=url, headers={
-					'Authorization': 'Bearer ' + jsonwebtoken}, json={"institution": "ABC", "prefix": "cfg"})
-				# TODO configure prefix
-				json_data = result.json()
-				if "invnr" in json_data:
-					inventarnummer = json_data["invnr"]
-				else:
-					logger.debug(json.dumps(json_data))
-			except requests.exceptions.ConnectionError:
-				logger.debug("Exception")
 		if data[i]["_objecttype"] != "formula":
-			url = "http://example.com"  # TODO insert url of converter service here
-			result = requests.post(url=url, json={"formula": data[i]["ztest"]["formula"]})  # TODO configure formula sent
-			json_data = result.json()
-			if "convertedFormula" in json_data:
-				convertedFormula = json_data["convertedFormula"]
+			formula = data[i]["ztest"]["formula"]
+			# replace variations for Multiplication sign
+			formula = formula.replace('*', '·')
+
+			# set map for superstring and substring
+			SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+			SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+			# set variables
+			multiplicator = False
+			convertedFormula = ''
+
+			for i in range(len(formula)):
+				if formula[i] == '·':
+					multiplicator = True
+				if formula[i].isalpha():
+					multiplicator = False
+				if formula[i].isdigit and not multiplicator:
+					# handle free ions / charge
+					if formula[i] == '+':
+						convertedFormula = convertedFormula[:-1]
+						convertedFormula = convertedFormula + formula[i-1].translate(SUP)
+						convertedFormula = convertedFormula + "⁺"
+					# handle number of atoms
+					else:
+						convertedFormula = convertedFormula + formula[i].translate(SUB)
+				else:
+					convertedFormula = convertedFormula + formula[i]
 			else:
 				logger.debug(json.dumps(json_data))
 		# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
 		data[i]["_mask"] = "_all_fields"
 
-		# only write invnr if field is empty
-		if get_json_value(data[i], "ztest.invnr") is None:
-			try:
-				data[i]["ztest"]["invnr"] = inventarnummer
-			except:
-				logger.debug("Problem generating invnr: " + inventarnummer +
-							 " at object " + get_json_value(data[i], "ztest._id"))
+		# only write formula if field is empty
 		if get_json_value(data[i], "ztest.formula") is None:
 			try:
 				data[i]["ztest"]["formula"] = convertedFormula
