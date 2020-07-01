@@ -57,45 +57,21 @@ def pre_update(easydb_context, easydb_info):
 		# check if the objecttype is correct
 		if data[i]["_objecttype"] != "formula":
 			formula = data[i]["ztest"]["mineralogische_formeln"]
-			# replace variations for Multiplication sign
-			formula = formula.replace('*', '·')
-
-			# set map for superstring and substring
-			SUB = string.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
-			SUP = string.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
-
-			# set variables
-			multiplicator = False
-			convertedFormula = ''
-
-			for i in range(len(formula)):
-				if formula[i] == '·':
-					multiplicator = True
-				if formula[i].isalpha():
-					multiplicator = False
-				if formula[i].isdigit and not multiplicator:
-					# handle free ions / charge
-					if formula[i] == '+':
-						convertedFormula = convertedFormula[:-1]
-						convertedFormula = convertedFormula + formula[i-1].translate(SUP)
-						convertedFormula = convertedFormula + "⁺"
-					# handle number of atoms
-					else:
-						convertedFormula = convertedFormula + formula[i].translate(SUB)
-				else:
-					convertedFormula = convertedFormula + formula[i]
+			url = "http://easydbwebservice/convert"
+			result = requests.post(url=url, json={"formula": data[i]["ztest"]["mineralogische_formeln"]})
+			json_data = result.json()
+			if "convertedFormula" in json_data:
+				convertedFormula = json_data["convertedFormula"]
 			else:
 				logger.debug(json.dumps(json_data))
 		# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
 		data[i]["_mask"] = "_all_fields"
 
-		# only write formula if field is empty
-		if get_json_value(data[i], "ztest.mineralogische_formeln") is None:
-			try:
-				data[i]["ztest"]["mineralogische_formeln"] = convertedFormula
-			except:
-				logger.debug("Problem saving formula: " + convertedFormula +
-							 " at object " + get_json_value(data[i], "ztest._id"))
+		try:
+			data[i]["ztest"]["mineralogische_formeln"] = convertedFormula
+		except:
+			logger.debug("Problem saving formula: " + convertedFormula +
+						 " at object " + get_json_value(data[i], "ztest._id"))
 	# always return if no exception was thrown, so the server and frontend are not blocked
 	print(json.dumps(data, indent=4))
 	return data
