@@ -5,6 +5,10 @@ import json
 import yaml
 import requests
 
+import sys
+reload(sys)
+sys.setdefaultencoding('utf-8')
+
 from datetime import datetime, date
 import calendar
 import locale
@@ -16,6 +20,8 @@ from threading import Thread
 from context import EasydbException
 from context import InvalidValueError
 from context import get_json_value
+
+
 
 
 # called from easydb
