@@ -78,8 +78,9 @@ def pre_update(easydb_context, easydb_info):
 							convertedFormula = convertedFormula + formula[i].translate(SUB)
 					else:
 						convertedFormula = convertedFormula + formula[i]
-			except error:
-				print ("Es ist folgender Fehler aufgetreten:" + error)
+			except:
+				e = sys.exc_info()[0]
+				print ("Es ist folgender Fehler aufgetreten:" + e)
 			else:
 				logger.debug(json.dumps(json_data))
 		# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
