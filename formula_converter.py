@@ -49,38 +49,34 @@ def pre_update(easydb_context, easydb_info):
 
 		# check if the objecttype is correct
 		if data[i]["_objecttype"] != "formula":
-			try:
-				formula = data[i]["ztest"]["mineralogische_formeln"]
-				# replace variations for Multiplication sign
-				formula = formula.replace('*', '·')
+			formula = data[i]["ztest"]["mineralogische_formeln"]
+			# replace variations for Multiplication sign
+			formula = formula.replace('*', '·')
 
-				# set map for superstring and substring
-				SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
-				SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+			# set map for superstring and substring
+			SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+			SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 
-				# set variables
-				multiplicator = False
-				convertedFormula = ''
+			# set variables
+			multiplicator = False
+			convertedFormula = ''
 
-				for i in range(len(formula)):
-					if formula[i] == '·':
-						multiplicator = True
-					if formula[i].isalpha():
-						multiplicator = False
-					if formula[i].isdigit and not multiplicator:
-						# handle free ions / charge
-						if formula[i] == '+':
-							convertedFormula = convertedFormula[:-1]
-							convertedFormula = convertedFormula + formula[i-1].translate(SUP)
-							convertedFormula = convertedFormula + "⁺"
-						# handle number of atoms
-						else:
-							convertedFormula = convertedFormula + formula[i].translate(SUB)
+			for i in range(len(formula)):
+				if formula[i] == '·':
+					multiplicator = True
+				if formula[i].isalpha():
+					multiplicator = False
+				if formula[i].isdigit and not multiplicator:
+					# handle free ions / charge
+					if formula[i] == '+':
+						convertedFormula = convertedFormula[:-1]
+						convertedFormula = convertedFormula + formula[i-1].translate(SUP)
+						convertedFormula = convertedFormula + "⁺"
+					# handle number of atoms
 					else:
-						convertedFormula = convertedFormula + formula[i]
-			except:
-				e = sys.exc_info()[0]
-				print ("Es ist folgender Fehler aufgetreten:" + e)
+						convertedFormula = convertedFormula + formula[i].translate(SUB)
+				else:
+					convertedFormula = convertedFormula + formula[i]
 			else:
 				logger.debug(json.dumps(json_data))
 		# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
