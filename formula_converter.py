@@ -8,6 +8,7 @@ import requests
 import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
+import string
 
 from datetime import datetime, date
 import calendar
@@ -60,8 +61,8 @@ def pre_update(easydb_context, easydb_info):
 			formula = formula.replace('*', '·')
 
 			# set map for superstring and substring
-			SUB = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
-			SUP = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+			SUB = string.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+			SUP = string.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
 
 			# set variables
 			multiplicator = False
