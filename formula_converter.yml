@@ -1,6 +1,6 @@
 plugin:
-  name: ulb
-  version: 1.0
+  name: formula_converter
+  version: 0.1
   server:
     api-version:
       require: 1
@@ -9,4 +9,4 @@ custom_events:
   - EASYDB_EXAMPLE_PLUGIN_EVENT
 
 python-2:
-  file: ulb.py
+  file: formula_converter.py
