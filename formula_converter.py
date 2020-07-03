@@ -64,14 +64,13 @@ def pre_update(easydb_context, easydb_info):
 				convertedFormula = json_data["convertedFormula"]
 			else:
 				logger.debug(json.dumps(json_data))
-		# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
-		data[i]["_mask"] = "_all_fields"
-
-		try:
-			data[i]["mineralogie"]["formel"] = convertedFormula
-		except:
-			logger.debug("Problem saving formula: " + convertedFormula +
-						 " at object " + get_json_value(data[i], "ztest._id"))
+			# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
+			data[i]["_mask"] = "_all_fields"
+			try:
+				data[i]["mineralogie"]["formel"] = convertedFormula
+			except:
+				logger.debug("Problem saving formula: " + convertedFormula +
+							 " at object " + get_json_value(data[i], "ztest._id"))
 	# always return if no exception was thrown, so the server and frontend are not blocked
 	print(json.dumps(data, indent=4))
 	return data
