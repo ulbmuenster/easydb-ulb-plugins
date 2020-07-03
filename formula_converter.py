@@ -41,7 +41,7 @@ def pre_update(easydb_context, easydb_info):
 	convertedFormula = ''
 	# get a logger
 	logger = easydb_context.get_logger('ulb.pre_update')
-	logger.info("pre_update called via ulb plugin")
+	logger.info("pre_update called via formula_converter plugin")
 
 	# get the object data
 	data = get_json_value(easydb_info, "data")
@@ -55,10 +55,10 @@ def pre_update(easydb_context, easydb_info):
 			continue
 
 		# check if the objecttype is correct
-		if data[i]["_objecttype"] != "formula":
-			formula = data[i]["ztest"]["mineralogische_formeln"]
+		if data[i]["_objecttype"] == "mineralogie":
+			formula = data[i]["mineralogie"]["formel"]
 			url = "http://easydbwebservice/convert"
-			result = requests.post(url=url, json={"formula": data[i]["ztest"]["mineralogische_formeln"]})
+			result = requests.post(url=url, json={"formula": formula})
 			json_data = result.json()
 			if "convertedFormula" in json_data:
 				convertedFormula = json_data["convertedFormula"]
@@ -68,7 +68,7 @@ def pre_update(easydb_context, easydb_info):
 		data[i]["_mask"] = "_all_fields"
 
 		try:
-			data[i]["ztest"]["mineralogische_formeln"] = convertedFormula
+			data[i]["mineralogie"]["formel"] = convertedFormula
 		except:
 			logger.debug("Problem saving formula: " + convertedFormula +
 						 " at object " + get_json_value(data[i], "ztest._id"))
