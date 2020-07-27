@@ -49,28 +49,28 @@ def pre_update(easydb_context, easydb_info):
 
 	# check the data, and if there is invalid data, throw an InvalidValueError
 	for i in range(len(data)):
-
-		# check if the objecttype is set
-		if "_objecttype" not in data[i]:
+		# check if mineralogie is in data
+		if "mineralogie" not in data[i]:
 			continue
 
-		# check if the objecttype is correct
-		if data[i]["_objecttype"] == "mineralogie":
-			formula = data[i]["mineralogie"]["formel"]
-			url = "http://easydbwebservice/convert"
-			result = requests.post(url=url, json={"formula": formula})
-			json_data = result.json()
-			if "convertedFormula" in json_data:
-				convertedFormula = json_data["convertedFormula"]
-			else:
-				logger.debug(json.dumps(json_data))
-			# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
-			data[i]["_mask"] = "_all_fields"
-			try:
-				data[i]["mineralogie"]["formel"] = convertedFormula
-			except:
-				logger.debug("Problem saving formula: " + convertedFormula +
-							 " at object " + get_json_value(data[i], "ztest._id"))
+		# check if formel is in mineralogie
+		if "formel" not in data[i]["mineralogie"]:
+			continue
+
+		formula = data[i]["mineralogie"]["formel"]
+		url = "http://easydbwebservice/convert"
+		result = requests.post(url=url, json={"formula": formula})
+		json_data = result.json()
+		if "convertedFormula" in json_data:
+			convertedFormula = json_data["convertedFormula"]
+		else:
+			logger.debug(json.dumps(json_data))
+		# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
+		data[i]["_mask"] = "_all_fields"
+		try:
+			data[i]["mineralogie"]["formel"] = convertedFormula
+		except:
+			logger.debug("Problem saving formula: " + convertedFormula)
 	# always return if no exception was thrown, so the server and frontend are not blocked
 	print(json.dumps(data, indent=4))
 	return data
