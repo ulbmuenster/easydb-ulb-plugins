@@ -52,11 +52,11 @@
 
 ## Usage
 
-Update a file with objecttype "ztest".
+Update an object that has "Mineralogie" and a "formel" field.
 
 ## Logging
 
-Logs can be read via `sudo docker logs easydb-server`
+Logs can be read via `sudo docker logs easydb-server` depending on the server.
 
 ## Contributing
 
