@@ -58,7 +58,7 @@ def pre_update(easydb_context, easydb_info):
 			continue
 
 		formula = data[i]["mineralogie"]["formel"]
-		url = "http://easydbwebservice/convert"
+		url = "https://easydbwebservice/convert"
 		result = requests.post(url=url, json={"formula": formula})
 		json_data = result.json()
 		if "convertedFormula" in json_data:
