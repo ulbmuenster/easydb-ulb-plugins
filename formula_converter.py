@@ -68,7 +68,7 @@ def pre_update(easydb_context, easydb_info):
 		# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
 		data[i]["_mask"] = "_all_fields"
 		try:
-			data[i]["mineralogie"]["formel"] = convertedFormula
+			data[i]["fb14_basis_dm_1"]["formel"] = convertedFormula
 		except:
 			logger.debug("Problem saving formula: " + convertedFormula)
 	# always return if no exception was thrown, so the server and frontend are not blocked
