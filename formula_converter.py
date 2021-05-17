@@ -39,6 +39,8 @@ def easydb_server_start(easydb_context):
 # method for the 'db_pre_update' callback
 def pre_update(easydb_context, easydb_info):
 	convertedFormula = ''
+	#datamodel/"Datenmodell"
+	datamodel = "fb14_basis_dm_1"
 	# get a logger
 	logger = easydb_context.get_logger('ulb.pre_update')
 	logger.info("pre_update called via formula_converter plugin")
@@ -49,15 +51,14 @@ def pre_update(easydb_context, easydb_info):
 
 	# check the data, and if there is invalid data, throw an InvalidValueError
 	for i in range(len(data)):
-		# check if mineralogie is in data
-		if "mineralogie" not in data[i]:
+		# check if datamodel is in data
+		if datamodel not in data[i]:
 			continue
-
 		# check if formel is in mineralogie
-		if "formel" not in data[i]["mineralogie"]:
+		if "formel" not in data[i][datamodel]:
 			continue
 
-		formula = data[i]["mineralogie"]["formel"]
+		formula = data[i][datamodel]["formel"]
 		url = "https://easydbwebservice/convert"
 		result = requests.post(url=url, json={"formula": formula})
 		json_data = result.json()
@@ -68,7 +69,7 @@ def pre_update(easydb_context, easydb_info):
 		# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
 		data[i]["_mask"] = "_all_fields"
 		try:
-			data[i]["fb14_basis_dm_1"]["formel"] = convertedFormula
+			data[i][datamodel]["formel"] = convertedFormula
 		except:
 			logger.debug("Problem saving formula: " + convertedFormula)
 	# always return if no exception was thrown, so the server and frontend are not blocked
