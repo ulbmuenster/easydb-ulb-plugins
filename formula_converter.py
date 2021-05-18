@@ -38,7 +38,7 @@ def easydb_server_start(easydb_context):
 
 # method for the 'db_pre_update' callback
 def pre_update(easydb_context, easydb_info):
-	convertedFormula = ''
+	convertedformula = ''
 	#datamodel/"Datenmodell"
 	datamodel = "fb14_basis_dm_1"
 	# get a logger
@@ -62,16 +62,16 @@ def pre_update(easydb_context, easydb_info):
 		url = "https://easydbwebservice/convert"
 		result = requests.post(url=url, json={"formula": formula})
 		json_data = result.json()
-		if "convertedFormula" in json_data:
-			convertedFormula = json_data["convertedFormula"]
+		if "convertedformula" in json_data:
+			convertedformula = json_data["convertedformula"]
 		else:
 			logger.debug(json.dumps(json_data))
 		# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
 		data[i]["_mask"] = "_all_fields"
 		try:
-			data[i][datamodel]["formel"] = convertedFormula
+			data[i][datamodel]["formel"] = convertedformula
 		except:
-			logger.debug("Problem saving formula: " + convertedFormula)
+			logger.debug("Problem saving formula: " + convertedformula)
 	# always return if no exception was thrown, so the server and frontend are not blocked
 	print(json.dumps(data, indent=4))
 	return data
