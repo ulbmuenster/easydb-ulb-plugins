@@ -59,7 +59,7 @@ def pre_update(easydb_context, easydb_info):
 			continue
 
 		formula = data[i][datamodel]["formel"]
-		url = "https://easydbwebservice/convert"
+		url = "https://easydbwebservice.uni-muenster.de/convert"
 		result = requests.post(url=url, json={"formula": formula})
 		json_data = result.json()
 		if "convertedformula" in json_data:
