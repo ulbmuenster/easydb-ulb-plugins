@@ -63,7 +63,7 @@ def pre_update(easydb_context, easydb_info):
 		result = requests.post(url=url, json={"formula": formula})
 		json_data = result.json()
 		if "convertedformula" in json_data:
-			convertedformula = json_data["convertedformula"]
+			convertedformula = json_data["convertedFormula"]
 		else:
 			logger.debug(json.dumps(json_data))
 		# to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
