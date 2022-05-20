@@ -67,9 +67,9 @@ def convert(easydb_context, easydb_info):
                         converted_formula = converted_formula + "⁺"
                     # handle number of atoms
                     else:
-                        converted_formula = converted_formula + formula[i].translate(sub)
+                        converted_formula = converted_formula + formula[character].translate(sub)
                 else:
-                    converted_formula = converted_formula + formula[i]
+                    converted_formula = converted_formula + formula[character]
             # to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
             data[i]["_mask"] = "_all_fields"
             try:
@@ -82,4 +82,6 @@ def convert(easydb_context, easydb_info):
     except Exception as exception:
         logging.error(str(exception))
     finally:
+        # "Local variable 'data' might be referenced before assignment" => This try-catch is also in the
+        # documentation exactly like this. See: https://docs.easydb.de/en/technical/plugins/ => database callbacks
         return data
