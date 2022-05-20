@@ -1,0 +1,12 @@
+plugin:
+  name: easydb-formula-converter-plugin
+  version: 0.2
+  url: https://github.com/ulbmuenster/easydb-ulb-plugins/blob/master/formula_converter.py
+  displayname:
+    de-DE: Formel-Konverter
+    en-US: Formula converter
+  info:
+    de-DE: "Konvertiert chemische Formeln in das richtige Format mit höher und niedriger gestellen Zahlen."
+    en-US: "Converts a chemical formula into the right format with super- and subscript."
+python-2:
+  file: formula_converter.py

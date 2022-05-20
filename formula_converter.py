@@ -1,76 +1,83 @@
 # coding=utf8
-
-import os
 import json
-import yaml
-import requests
+import logging
 
-import sys
-
-reload(sys)
-sys.setdefaultencoding('utf-8')
-import string
-
-from datetime import datetime, date
-import calendar
-import locale
-from dateutil.relativedelta import relativedelta
-
-from time import sleep
-from threading import Thread
-
-from context import EasydbException
-from context import InvalidValueError
 from context import get_json_value
 
 
-# called from easydb
 def easydb_server_start(easydb_context):
-    # called when server starts (just once)
-    logger = easydb_context.get_logger('ulb')
-    logger.debug('registering ulb plugin')
+    easydb_context.register_callback('db_pre_update', {'callback': 'convert'})
 
-    # api callbacks that extend the api
-    easydb_context.register_callback(
-        'db_pre_update', {'callback': 'pre_update'})
+    logging.basicConfig(filename="/var/tmp/formula_converter.log", level=logging.DEBUG)
+    logging.info("Loaded formula converter.")
 
 
-# method for the 'db_pre_update' callback
-def pre_update(easydb_context, easydb_info):
-    convertedformula = ''
-    # datamodel/"Datenmodell"
-    datamodel = "fb14_basis_dm_1"
-    # get a logger
-    logger = easydb_context.get_logger('ulb.pre_update')
-    logger.info("pre_update called via formula_converter plugin")
+def convert(easydb_context, easydb_info):
+    try:
+        converted_formula = ''
+        # datamodel/"Datenmodell"
+        datamodel = "fb14_basis_dm_1"
 
-    # get the object data
-    data = get_json_value(easydb_info, "data")
-    logger.debug("%d Objects" % len(data))
+        # get a logger
+        logger = easydb_context.get_logger('ulb.pre_update')
+        logger.info("db_pre_update called via formula_converter plugin")
 
-    # check the data, and if there is invalid data, throw an InvalidValueError
-    for i in range(len(data)):
-        # check if datamodel is in data
-        if datamodel not in data[i]:
-            continue
-        # check if formel is in datamodel
-        if "formel" not in data[i][datamodel]:
-            continue
+        # get the object data
+        data = get_json_value(easydb_info, "data")
+        logger.debug("%d Objects" % len(data))
 
-        formula = data[i][datamodel]["formel"]
-        url = "https://easydbwebservice.uni-muenster.de/convert"
-        result = requests.post(url=url, json={"formula": formula})
-        json_data = result.json()
-        if "convertedFormula" in json_data:
-            convertedformula = json_data["convertedFormula"]
-        else:
-            logger.debug(json.dumps(json_data))
-        # to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
-        data[i]["_mask"] = "_all_fields"
-        try:
-            data[i][datamodel]["formel"] = convertedformula
-        except:
-            logger.debug("Problem saving formula: " + convertedformula)
-    # always return if no exception was thrown, so the server and frontend are not blocked
-    print(json.dumps(data, indent=4))
-    return data
+        # check the data, and if there is invalid data, throw an InvalidValueError
+        for i in range(len(data)):
+
+            # check if datamodel is in data
+            if datamodel not in data[i]:
+                continue
+
+            # check if formel is in datamodel
+            if "formel" not in data[i][datamodel]:
+                continue
+
+            formula = data[i][datamodel]["formel"]
+            # url = "https://easydbwebservice.uni-muenster.de/convert"
+            # result = requests.post(url=url, json={"formula": formula})
+            # json_data = result.json()
+
+            # replace variations for Multiplication sign
+            formula = formula.replace('*', '·')
+
+            # set map for superstring and substring
+            sub = str.maketrans("0123456789", "₀₁₂₃₄₅₆₇₈₉")
+            sup = str.maketrans("0123456789", "⁰¹²³⁴⁵⁶⁷⁸⁹")
+
+            # set variables
+            multiplication = False
+
+            for character in range(len(formula)):
+                if formula[character] == '·':
+                    multiplication = True
+                if formula[character].isalpha():
+                    multiplication = False
+                if formula[character].isdigit and not multiplication:
+                    # handle free ions / charge
+                    if formula[character] == '+':
+                        converted_formula = converted_formula[:-1]
+                        converted_formula = converted_formula + formula[character - 1].translate(sup)
+                        converted_formula = converted_formula + "⁺"
+                    # handle number of atoms
+                    else:
+                        converted_formula = converted_formula + formula[i].translate(sub)
+                else:
+                    converted_formula = converted_formula + formula[i]
+            # to avoid confusion with masks and read/write settings in masks, always use the _all_fields mask
+            data[i]["_mask"] = "_all_fields"
+            try:
+                data[i][datamodel]["formel"] = converted_formula
+            except Exception:
+                logger.debug("Problem saving formula: " + converted_formula)
+        # always return if no exception was thrown, so the server and frontend are not blocked
+        print(json.dumps(data, indent=4))
+        return data
+    except Exception as exception:
+        logging.error(str(exception))
+    finally:
+        return data
