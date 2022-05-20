@@ -14,7 +14,6 @@ def easydb_server_start(easydb_context):
 
 def convert(easydb_context, easydb_info):
     try:
-        converted_formula = ''
         # datamodel/"Datenmodell"
         datamodel = "fb14_basis_dm_1"
 
@@ -51,6 +50,9 @@ def convert(easydb_context, easydb_info):
 
             # set variables
             multiplication = False
+
+            # In this we save the converted string.
+            converted_formula = ''
 
             for character in range(len(formula)):
                 if formula[character] == '·':
