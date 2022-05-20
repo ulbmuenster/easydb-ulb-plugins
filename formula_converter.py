@@ -18,8 +18,8 @@ def convert(easydb_context, easydb_info):
         datamodel = "fb14_basis_dm_1"
 
         # get a logger
-        logger = easydb_context.get_logger('ulb.pre_update')
-        logger.info("db_pre_update called via formula_converter plugin")
+        logger = easydb_context.get_logger('ulb.convert')
+        logger.info("db_pre_update called via formula_converter plugin.")
 
         # get the object data
         data = get_json_value(easydb_info, "data")
