@@ -21,20 +21,23 @@ def convert(easydb_context, easydb_info):
 
         # get the object data
         data = get_json_value(easydb_info, "data")
-        logger.debug("%d Objects" % len(data))
+        logger.debug('%d data objects' % len(data))
 
         # check the data, and if there is invalid data, throw an InvalidValueError
         for i in range(len(data)):
 
             # check if datamodel is in data
             if datamodel not in data[i]:
-                logger.debug('%s is not %s. Continuing.' % (datamodel, data[i]))
+                logger.debug(u'%s is not %s. Continuing.' % (datamodel, data[i]))
                 continue
-
+            else:
+                logger.debug(u'%s is %s.' % (datamodel, data[i]))
             # check if formel is in datamodel
             if "formel" not in data[i][datamodel]:
-                logger.debug('formel is not in datamodel[%d][%s]' % (i, datamodel))
+                logger.debug(u'formel is not in datamodel[%d][%s]' % (i, datamodel))
                 continue
+            else:
+                logger.debug(u'formel is in datamodel[%d][%s]' % (i, datamodel))
 
             formula = data[i][datamodel]["formel"]
             # url = "https://easydbwebservice.uni-muenster.de/convert"
