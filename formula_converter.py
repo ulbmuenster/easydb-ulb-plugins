@@ -7,8 +7,6 @@ from context import get_json_value
 
 def easydb_server_start(easydb_context):
     easydb_context.register_callback('db_pre_update', {'callback': 'convert'})
-
-    logging.basicConfig(filename="/var/tmp/formula_converter.log", level=logging.DEBUG)
     logging.info("Loaded formula converter.")
 
 
@@ -30,10 +28,12 @@ def convert(easydb_context, easydb_info):
 
             # check if datamodel is in data
             if datamodel not in data[i]:
+                logger.debug('%s is not %s. Continuing.' % (datamodel, data[i]))
                 continue
 
             # check if formel is in datamodel
             if "formel" not in data[i][datamodel]:
+                logger.debug('formel is not in datamodel[%d][%s]' % (i, datamodel))
                 continue
 
             formula = data[i][datamodel]["formel"]
