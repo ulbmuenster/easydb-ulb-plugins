@@ -28,16 +28,16 @@ def convert(easydb_context, easydb_info):
 
             # check if datamodel is in data
             if datamodel not in data[i]:
-                logger.debug(u'%s is not %s. Continuing.' % (datamodel, data[i]))
+                logger.debug('%s is not in %s. Continuing.' % (datamodel, 'data['+str(i)+']'))
                 continue
             else:
-                logger.debug(u'%s is %s.' % (datamodel, data[i]))
+                logger.debug('%s is in %s.' % (datamodel, 'data['+str(i)+']'))
             # check if formel is in datamodel
             if "formel" not in data[i][datamodel]:
-                logger.debug(u'formel is not in datamodel[%d][%s]' % (i, datamodel))
+                logger.debug('formel is not in datamodel[%d][%s]' % (i, datamodel))
                 continue
             else:
-                logger.debug(u'formel is in datamodel[%d][%s]' % (i, datamodel))
+                logger.debug('formel is in datamodel[%d][%s]' % (i, datamodel))
 
             formula = data[i][datamodel]["formel"]
             # url = "https://easydbwebservice.uni-muenster.de/convert"
